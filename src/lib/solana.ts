@@ -1,9 +1,9 @@
 import { Connection, PublicKey, ParsedInstruction, PartiallyDecodedInstruction } from "@solana/web3.js";
 
-// Using mainnet-beta for more reliable results
-const connection = new Connection("https://api.mainnet-beta.solana.com", {
+// Using testnet for development
+const connection = new Connection("https://api.testnet.solana.com", {
   commitment: "confirmed",
-  wsEndpoint: "wss://api.mainnet-beta.solana.com/",
+  wsEndpoint: "wss://api.testnet.solana.com/",
 });
 
 export async function getTransactionHistory(publicKey: string) {
