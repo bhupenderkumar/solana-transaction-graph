@@ -44,42 +44,52 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] via-[#2C1A2C] to-[#1A1F2C]">
-      <div className="container mx-auto py-8 px-4 space-y-8">
-        <div className="text-center space-y-4 mb-12 animate-float">
-          <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 animate-glow">
-            Solana Transaction Explorer
+      <div className="container mx-auto py-12 px-4 space-y-8">
+        <div className="text-center space-y-6 mb-16 animate-float">
+          <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-solana-purple to-solana-teal animate-glow">
+            Solana Explorer
           </h1>
-          <p className="text-gray-300 text-lg">
-            Visualize transaction history and relationships between Solana addresses
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+            Explore and visualize transaction history on the Solana blockchain with real-time updates and detailed analytics
           </p>
         </div>
 
-        <div className="flex justify-center mb-12">
+        <div className="flex justify-center mb-16">
           <SearchBar onSearch={fetchTransactions} />
         </div>
 
         {loading ? (
-          <div className="text-center text-white animate-pulse">Loading transactions...</div>
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 rounded-full bg-solana-purple animate-bounce [animation-delay:-0.3s]"></div>
+            <div className="w-4 h-4 rounded-full bg-solana-purple animate-bounce [animation-delay:-0.15s]"></div>
+            <div className="w-4 h-4 rounded-full bg-solana-purple animate-bounce"></div>
+          </div>
         ) : (
           <>
             {currentKey && (
               <div className="grid gap-8 lg:grid-cols-3">
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-1 space-y-8">
                   <TransactionTracker publicKey={currentKey} />
                 </div>
-                <div className="lg:col-span-2 glass p-4">
-                  {graphData.nodes.length > 0 && (
-                    <TransactionGraph
-                      data={graphData}
-                      onNodeClick={(nodeId) => fetchTransactions(nodeId)}
-                    />
-                  )}
+                <div className="lg:col-span-2">
+                  <div className="glass p-6 h-full">
+                    {graphData.nodes.length > 0 ? (
+                      <TransactionGraph
+                        data={graphData}
+                        onNodeClick={(nodeId) => fetchTransactions(nodeId)}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-400">
+                        No transaction data to visualize
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
             
             {transactions.length > 0 && (
-              <div className="mt-8 glass p-4">
+              <div className="mt-8">
                 <TransactionTable transactions={transactions} />
               </div>
             )}

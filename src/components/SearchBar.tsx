@@ -3,6 +3,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { PublicKey } from "@solana/web3.js";
+import { Search } from "lucide-react";
 
 interface SearchBarProps {
   onSearch: (publicKey: string) => void;
@@ -28,17 +29,18 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
   };
 
   return (
-    <div className="flex w-full max-w-2xl gap-2 px-4 glass p-2">
+    <div className="flex w-full max-w-2xl gap-2 glass p-3">
       <Input
         placeholder="Enter Solana public key"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        className="bg-white/5 backdrop-blur-lg border-purple-500/20"
+        className="bg-white/5 border-none focus:ring-2 focus:ring-solana-purple/50"
       />
       <Button 
         onClick={handleSearch}
-        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white transition-all duration-300"
+        className="bg-gradient-to-r from-solana-purple to-solana-teal hover:opacity-90 transition-all duration-300"
       >
+        <Search className="w-4 h-4 mr-2" />
         Search
       </Button>
     </div>
