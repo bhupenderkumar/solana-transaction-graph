@@ -59,33 +59,29 @@ const Index = () => {
         </div>
 
         {loading ? (
-          <div className="text-center text-white">Loading transactions...</div>
+          <div className="text-center text-white animate-pulse">Loading transactions...</div>
         ) : (
           <>
             {currentKey && (
-              <div className="grid gap-8 md:grid-cols-2">
-                <TransactionTracker publicKey={currentKey} />
-                {transactions.length > 0 && (
-                  <div className="p-6 rounded-lg backdrop-blur-lg bg-white/5 border border-purple-500/20">
-                    <h2 className="text-xl font-semibold text-white mb-4">Transaction Stats</h2>
-                    <div className="text-gray-300">
-                      <p>Total Transactions: {transactions.length}</p>
-                      <p>Unique Addresses: {graphData.nodes.length}</p>
-                    </div>
-                  </div>
-                )}
+              <div className="grid gap-8 lg:grid-cols-3">
+                <div className="lg:col-span-1">
+                  <TransactionTracker publicKey={currentKey} />
+                </div>
+                <div className="lg:col-span-2">
+                  {graphData.nodes.length > 0 && (
+                    <TransactionGraph
+                      data={graphData}
+                      onNodeClick={(nodeId) => fetchTransactions(nodeId)}
+                    />
+                  )}
+                </div>
               </div>
             )}
             
-            {graphData.nodes.length > 0 && (
-              <TransactionGraph
-                data={graphData}
-                onNodeClick={(nodeId) => fetchTransactions(nodeId)}
-              />
-            )}
-
             {transactions.length > 0 && (
-              <TransactionTable transactions={transactions} />
+              <div className="mt-8 animate-fade-in">
+                <TransactionTable transactions={transactions} />
+              </div>
             )}
           </>
         )}

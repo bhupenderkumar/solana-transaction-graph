@@ -1,4 +1,4 @@
-import { Connection, PublicKey, ParsedInstruction, PartiallyDecodedInstruction } from "@solana/web3.js";
+import { Connection, PublicKey, ParsedInstruction, PartiallyDecodedInstruction, AccountInfo } from "@solana/web3.js";
 
 // Using testnet for development
 const connection = new Connection("https://api.testnet.solana.com", {
@@ -42,6 +42,10 @@ export async function getTransactionHistory(publicKey: string) {
           from,
           to,
           amount,
+          slot: sig.slot,
+          err: sig.err,
+          memo: sig.memo,
+          confirmationStatus: sig.confirmationStatus,
         };
       })
     );
@@ -53,32 +57,20 @@ export async function getTransactionHistory(publicKey: string) {
   }
 }
 
-export function processTransactionsForGraph(transactions: any[]) {
-  const nodes = new Map<string, number>();
-  const links: Array<{ source: string; target: string; value: number }> = [];
-
-  transactions.forEach((tx) => {
-    if (tx.from && tx.to) {
-      // Increment transaction count for each address
-      nodes.set(tx.from, (nodes.get(tx.from) || 0) + 1);
-      nodes.set(tx.to, (nodes.get(tx.to) || 0) + 1);
-      
-      links.push({
-        source: tx.from,
-        target: tx.to,
-        value: tx.amount,
-      });
-    }
-  });
-
-  return {
-    nodes: Array.from(nodes.entries()).map(([id, count]) => ({
-      id,
-      name: `${id.slice(0, 4)}...${id.slice(-4)} (${count} tx)`,
-      val: count, // Node size based on transaction count
-    })),
-    links,
-  };
+export async function getAccountInfo(publicKey: string) {
+  try {
+    const account = await connection.getAccountInfo(new PublicKey(publicKey));
+    const balance = await connection.getBalance(new PublicKey(publicKey));
+    return {
+      balance: balance / 1e9,
+      executable: account?.executable || false,
+      owner: account?.owner.toString() || '',
+      space: account?.data.length || 0,
+    };
+  } catch (error) {
+    console.error("Error fetching account info:", error);
+    throw error;
+  }
 }
 
 export function subscribeToTransactions(publicKey: string, callback: (transaction: any) => void) {
@@ -89,7 +81,7 @@ export function subscribeToTransactions(publicKey: string, callback: (transactio
       callback({
         signature: logs.signature,
         timestamp: Date.now(),
-        type: 'new-transaction'
+        type: logs.logs[0] || 'transaction',
       });
     },
     'confirmed'
