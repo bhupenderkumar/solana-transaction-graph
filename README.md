@@ -1,69 +1,137 @@
-# Welcome to your Lovable project
+# Solana Transaction Graph Visualizer 
 
-## Project info
+An interactive web application for exploring and visualizing Solana blockchain transactions with real-time graph visualization capabilities.
 
-**URL**: https://lovable.dev/projects/959d2053-2ec1-4198-af53-0d6ed65d1424
+![Solana Transaction Graph](public/preview.jpg)
 
-## How can I edit this code?
+## Features 
 
-There are several ways of editing your application.
+- **Interactive Transaction Graph**: Visualize transaction relationships between Solana addresses
+- **Real-time Updates**: Track new transactions as they happen on the network
+- **Advanced Search**: Search for any Solana address and explore its transaction history
+- **Transaction Details**: View detailed information about each transaction
+- **Account Information**: See balance and other account details
+- **Network Activity**: Monitor recent network transactions in real-time
 
-**Use Lovable**
+## Tech Stack 
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/959d2053-2ec1-4198-af53-0d6ed65d1424) and start prompting.
+- **Frontend Framework**: React + TypeScript + Vite
+- **Blockchain Integration**: @solana/web3.js
+- **Graph Visualization**: react-force-graph-2d
+- **UI Components**: shadcn/ui + Tailwind CSS
+- **State Management**: React Query
+- **Date Handling**: date-fns
+- **Routing**: React Router DOM
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started 
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v16 or higher)
+- npm or yarn
+- Git
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Clone the repository:
+```bash
+git clone https://github.com/bhupenderkumar/solana-transaction-graph.git
+cd solana-transaction-graph
 ```
 
-**Edit a file directly in GitHub**
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. Start the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
 
-**Use GitHub Codespaces**
+4. Open [http://localhost:5173](http://localhost:5173) in your browser
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure 
 
-## What technologies are used for this project?
+```
+solana-transaction-graph/
+├── src/
+│   ├── components/          # Reusable UI components
+│   ├── lib/                 # Utility functions and Solana integration
+│   ├── pages/              # Page components
+│   └── styles/             # Global styles and Tailwind config
+├── public/                 # Static assets
+└── package.json           # Project dependencies and scripts
+```
 
-This project is built with .
+## Key Components 
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **TransactionGraph**: Interactive visualization of transaction relationships
+- **SearchBar**: Address search with network selection
+- **TransactionTable**: Detailed transaction history display
+- **TransactionTracker**: Real-time transaction monitoring
+- **AccountMetadata**: Account information display
 
-## How can I deploy this project?
+## Features in Detail 
 
-Simply open [Lovable](https://lovable.dev/projects/959d2053-2ec1-4198-af53-0d6ed65d1424) and click on Share -> Publish.
+### Transaction Graph
+- Dynamic node sizing based on transaction volume
+- Color-coded nodes for different transaction types
+- Interactive node selection and navigation
+- Smooth animations and transitions
 
-## I want to use a custom domain - is that possible?
+### Transaction Processing
+- Support for various transaction types
+- Real-time data updates
+- Efficient data parsing and processing
+- Error handling and retry mechanisms
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+### User Interface
+- Responsive design for all screen sizes
+- Dark/Light theme support
+- Loading states and error handling
+- Modern and clean UI
+
+## Development 
+
+### Available Scripts
+
+- `npm run dev`: Start development server
+- `npm run build`: Build for production
+- `npm run preview`: Preview production build
+- `npm run lint`: Run ESLint
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_SOLANA_RPC_URL=your_rpc_url_here
+```
+
+## Contributing 
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License 
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments 
+
+- [Solana Web3.js](https://github.com/solana-labs/solana-web3.js)
+- [React Force Graph](https://github.com/vasturiano/react-force-graph)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+## Support 
+
+For support, please open an issue in the GitHub repository or contact the maintainers.
