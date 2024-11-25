@@ -1,20 +1,36 @@
 import { Connection, PublicKey, ParsedInstruction, PartiallyDecodedInstruction, AccountInfo } from "@solana/web3.js";
 
-// Using testnet for development
+// Using testnet with increased commitment level and longer timeout
 const connection = new Connection("https://api.testnet.solana.com", {
   commitment: "confirmed",
   wsEndpoint: "wss://api.testnet.solana.com/",
+  confirmTransactionInitialTimeout: 60000, // Increased timeout
 });
+
+// Rate limiting variables
+let lastCallTime = 0;
+const MIN_CALL_INTERVAL = 2000; // 2 seconds between calls
+
+const waitForRateLimit = async () => {
+  const now = Date.now();
+  const timeSinceLastCall = now - lastCallTime;
+  if (timeSinceLastCall < MIN_CALL_INTERVAL) {
+    await new Promise(resolve => setTimeout(resolve, MIN_CALL_INTERVAL - timeSinceLastCall));
+  }
+  lastCallTime = Date.now();
+};
 
 export async function getTransactionHistory(publicKey: string) {
   try {
+    await waitForRateLimit();
     const signatures = await connection.getSignaturesForAddress(
       new PublicKey(publicKey),
-      { limit: 20 }
+      { limit: 10 } // Reduced from 20 to 10 to minimize rate limiting issues
     );
 
     const transactions = await Promise.all(
       signatures.map(async (sig) => {
+        await waitForRateLimit();
         const tx = await connection.getParsedTransaction(sig.signature);
         if (!tx?.meta) return null;
 
@@ -23,15 +39,21 @@ export async function getTransactionHistory(publicKey: string) {
         let from = publicKey;
         let to = "";
         let amount = 0;
+        let programId = "";
+        let status = tx.meta.err ? "Failed" : "Success";
+        let fee = tx.meta.fee / 1e9;
 
         const instruction = tx.transaction.message.instructions[0];
-        if ('programId' in instruction && instruction.programId.toString() === '11111111111111111111111111111111') {
-          if ('parsed' in instruction) {
-            const parsed = (instruction as ParsedInstruction).parsed;
-            if (parsed.type === "transfer") {
-              from = parsed.info.source;
-              to = parsed.info.destination;
-              amount = parsed.info.lamports / 1e9;
+        if ('programId' in instruction) {
+          programId = instruction.programId.toString();
+          if (programId === '11111111111111111111111111111111') {
+            if ('parsed' in instruction) {
+              const parsed = (instruction as ParsedInstruction).parsed;
+              if (parsed.type === "transfer") {
+                from = parsed.info.source;
+                to = parsed.info.destination;
+                amount = parsed.info.lamports / 1e9;
+              }
             }
           }
         }
@@ -46,6 +68,9 @@ export async function getTransactionHistory(publicKey: string) {
           err: sig.err,
           memo: sig.memo,
           confirmationStatus: sig.confirmationStatus,
+          programId,
+          status,
+          fee
         };
       })
     );
@@ -59,13 +84,20 @@ export async function getTransactionHistory(publicKey: string) {
 
 export async function getAccountInfo(publicKey: string) {
   try {
+    await waitForRateLimit();
     const account = await connection.getAccountInfo(new PublicKey(publicKey));
     const balance = await connection.getBalance(new PublicKey(publicKey));
+    
+    await waitForRateLimit();
+    const rentExemption = await connection.getMinimumBalanceForRentExemption(0);
+    
     return {
       balance: balance / 1e9,
       executable: account?.executable || false,
       owner: account?.owner.toString() || '',
       space: account?.data.length || 0,
+      rentExemption: rentExemption / 1e9,
+      isRentExempt: balance >= rentExemption
     };
   } catch (error) {
     console.error("Error fetching account info:", error);
@@ -73,8 +105,14 @@ export async function getAccountInfo(publicKey: string) {
   }
 }
 
+let currentSubscription: number | null = null;
+
 export function subscribeToTransactions(publicKey: string, callback: (transaction: any) => void) {
-  const subscriptionId = connection.onLogs(
+  if (currentSubscription) {
+    connection.removeOnLogsListener(currentSubscription);
+  }
+
+  currentSubscription = connection.onLogs(
     new PublicKey(publicKey),
     (logs) => {
       if (logs.err) return;
@@ -88,7 +126,10 @@ export function subscribeToTransactions(publicKey: string, callback: (transactio
   );
 
   return () => {
-    connection.removeOnLogsListener(subscriptionId);
+    if (currentSubscription) {
+      connection.removeOnLogsListener(currentSubscription);
+      currentSubscription = null;
+    }
   };
 }
 
@@ -96,11 +137,9 @@ export function processTransactionsForGraph(transactions: any[]) {
   const nodes = new Map();
   const links = new Map();
 
-  // Add the transactions to the graph data
   transactions.forEach((tx) => {
     if (!tx.from || !tx.to) return;
 
-    // Add nodes if they don't exist
     if (!nodes.has(tx.from)) {
       nodes.set(tx.from, {
         id: tx.from,
@@ -125,7 +164,6 @@ export function processTransactionsForGraph(transactions: any[]) {
       nodes.set(tx.to, node);
     }
 
-    // Add or update links
     const linkId = `${tx.from}-${tx.to}`;
     if (!links.has(linkId)) {
       links.set(linkId, {

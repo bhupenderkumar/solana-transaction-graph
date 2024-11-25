@@ -14,6 +14,9 @@ interface Transaction {
   from: string;
   to: string;
   amount: number;
+  status: string;
+  fee: number;
+  programId: string;
 }
 
 interface TransactionTableProps {
@@ -30,6 +33,9 @@ export const TransactionTable = ({ transactions }: TransactionTableProps) => {
             <TableHead>From</TableHead>
             <TableHead>To</TableHead>
             <TableHead>Amount (SOL)</TableHead>
+            <TableHead>Fee (SOL)</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Program</TableHead>
             <TableHead>Signature</TableHead>
           </TableRow>
         </TableHeader>
@@ -39,7 +45,16 @@ export const TransactionTable = ({ transactions }: TransactionTableProps) => {
               <TableCell>{format(tx.timestamp, "PPpp")}</TableCell>
               <TableCell className="font-mono">{tx.from.slice(0, 8)}...</TableCell>
               <TableCell className="font-mono">{tx.to.slice(0, 8)}...</TableCell>
-              <TableCell>{tx.amount}</TableCell>
+              <TableCell>{tx.amount.toFixed(4)}</TableCell>
+              <TableCell>{tx.fee.toFixed(6)}</TableCell>
+              <TableCell>
+                <span className={`px-2 py-1 rounded ${
+                  tx.status === "Success" ? "bg-green-500/20 text-green-300" : "bg-red-500/20 text-red-300"
+                }`}>
+                  {tx.status}
+                </span>
+              </TableCell>
+              <TableCell className="font-mono">{tx.programId.slice(0, 8)}...</TableCell>
               <TableCell className="font-mono">{tx.signature.slice(0, 8)}...</TableCell>
             </TableRow>
           ))}
