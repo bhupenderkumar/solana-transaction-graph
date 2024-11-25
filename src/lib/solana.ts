@@ -97,7 +97,9 @@ export async function getAccountInfo(publicKey: string) {
       owner: account?.owner.toString() || '',
       space: account?.data.length || 0,
       rentExemption: rentExemption / 1e9,
-      isRentExempt: balance >= rentExemption
+      isRentExempt: balance >= rentExemption,
+      programData: account?.data || null,
+      lamportsPerSignature: await connection.getRecentBlockhash().then(res => res.feeCalculator.lamportsPerSignature)
     };
   } catch (error) {
     console.error("Error fetching account info:", error);
@@ -140,11 +142,13 @@ export function processTransactionsForGraph(transactions: any[]) {
   transactions.forEach((tx) => {
     if (!tx.from || !tx.to) return;
 
+    // Add nodes with improved visual properties
     if (!nodes.has(tx.from)) {
       nodes.set(tx.from, {
         id: tx.from,
         name: `${tx.from.slice(0, 4)}...${tx.from.slice(-4)}`,
         val: 1,
+        color: "#9945FF"
       });
     } else {
       const node = nodes.get(tx.from);
@@ -157,6 +161,7 @@ export function processTransactionsForGraph(transactions: any[]) {
         id: tx.to,
         name: `${tx.to.slice(0, 4)}...${tx.to.slice(-4)}`,
         val: 1,
+        color: "#14F195"
       });
     } else {
       const node = nodes.get(tx.to);

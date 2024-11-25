@@ -3,7 +3,8 @@ import { SearchBar } from "@/components/SearchBar";
 import { TransactionGraph } from "@/components/TransactionGraph";
 import { TransactionTable } from "@/components/TransactionTable";
 import { TransactionTracker } from "@/components/TransactionTracker";
-import { getTransactionHistory, processTransactionsForGraph } from "@/lib/solana";
+import { AccountMetadata } from "@/components/AccountMetadata"; // Import the new AccountMetadata component
+import { getTransactionHistory, processTransactionsForGraph, getAccountInfo } from "@/lib/solana";
 import { toast } from "sonner";
 
 const Index = () => {
@@ -11,20 +12,23 @@ const Index = () => {
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(false);
   const [currentKey, setCurrentKey] = useState<string>("");
+  const [accountInfo, setAccountInfo] = useState<any | null>(null); // State for account info
 
   const fetchTransactions = async (publicKey: string) => {
     try {
       setLoading(true);
       toast.info("Fetching transactions...");
       const txHistory = await getTransactionHistory(publicKey);
-      
+      const info = await getAccountInfo(publicKey); // Fetch account info
+
       if (txHistory.length === 0) {
         toast.warning("No transactions found for this address");
         return;
       }
-      
+
       setTransactions(txHistory);
       setGraphData(processTransactionsForGraph(txHistory));
+      setAccountInfo(info); // Set account info
       setCurrentKey(publicKey);
       toast.success(`Found ${txHistory.length} transactions`);
     } catch (error) {
@@ -84,6 +88,10 @@ const Index = () => {
               <div className="grid gap-8 lg:grid-cols-3">
                 <div className="lg:col-span-1 space-y-8">
                   <TransactionTracker publicKey={currentKey} />
+                  <AccountMetadata 
+                    accountInfo={accountInfo} 
+                    loading={loading} 
+                  />
                 </div>
                 <div className="lg:col-span-2">
                   <div className="glass p-6 h-full">

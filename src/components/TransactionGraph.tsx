@@ -6,6 +6,7 @@ interface Node {
   id: string;
   name: string;
   val: number;
+  color?: string;
 }
 
 interface Link {
@@ -29,7 +30,10 @@ export const TransactionGraph = ({ data, onNodeClick }: TransactionGraphProps) =
 
   useEffect(() => {
     if (graphRef.current) {
+      // Adjust force parameters for better visualization
       graphRef.current.d3Force("charge").strength(-400);
+      graphRef.current.d3Force("link").distance(200);
+      graphRef.current.d3Force("center").strength(0.8);
     }
   }, []);
 
@@ -38,7 +42,7 @@ export const TransactionGraph = ({ data, onNodeClick }: TransactionGraphProps) =
       <ForceGraph2D
         ref={graphRef}
         graphData={data}
-        nodeColor={() => "#9945FF"}
+        nodeColor={(node: any) => node.color || "#9945FF"}
         linkColor={() => "#14F195"}
         nodeRelSize={6}
         linkWidth={2}
@@ -52,8 +56,14 @@ export const TransactionGraph = ({ data, onNodeClick }: TransactionGraphProps) =
           const label = node.name;
           const fontSize = 12/globalScale;
           ctx.font = `${fontSize}px Sans-Serif`;
-          ctx.fillStyle = "#9945FF";
+          ctx.fillStyle = node.color || "#9945FF";
           ctx.fillText(label, node.x, node.y + 8);
+          
+          // Draw node circle
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, 4, 0, 2 * Math.PI);
+          ctx.fillStyle = node.color || "#9945FF";
+          ctx.fill();
         }}
       />
     </div>
