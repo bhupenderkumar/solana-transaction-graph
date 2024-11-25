@@ -27,18 +27,18 @@ export const TransactionTracker = ({ publicKey }: TransactionTrackerProps) => {
   }, [publicKey]);
 
   return (
-    <Card className="w-full backdrop-blur-lg bg-white/5 border-solana-purple/20 animate-fade-in">
+    <Card className="backdrop-blur-lg bg-white/5 border-purple-500/20 animate-fade-in">
       <CardHeader>
-        <CardTitle className="text-lg font-medium">Latest Transactions</CardTitle>
+        <CardTitle className="text-lg font-medium text-white">Latest Transactions</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
           {latestTransactions.map((tx) => (
             <div
               key={tx.signature}
-              className="flex justify-between items-center p-2 rounded bg-white/5"
+              className="flex justify-between items-center p-2 rounded bg-purple-500/10 border border-purple-500/20"
             >
-              <span className="font-mono text-sm">
+              <span className="font-mono text-sm text-gray-300">
                 {tx.signature.slice(0, 8)}...
               </span>
               <span className="text-sm text-gray-400">

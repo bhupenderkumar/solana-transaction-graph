@@ -15,12 +15,21 @@ const Index = () => {
   const fetchTransactions = async (publicKey: string) => {
     try {
       setLoading(true);
+      toast.info("Fetching transactions...");
       const txHistory = await getTransactionHistory(publicKey);
+      
+      if (txHistory.length === 0) {
+        toast.warning("No transactions found for this address");
+        return;
+      }
+      
       setTransactions(txHistory);
       setGraphData(processTransactionsForGraph(txHistory));
       setCurrentKey(publicKey);
+      toast.success(`Found ${txHistory.length} transactions`);
     } catch (error) {
-      toast.error("Failed to fetch transactions");
+      toast.error("Failed to fetch transactions. Please try again.");
+      console.error("Error:", error);
     } finally {
       setLoading(false);
     }
@@ -34,7 +43,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-purple-900">
+    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] to-[#6E59A5]">
       <div className="container mx-auto py-8 px-4 space-y-8">
         <div className="text-center space-y-4 mb-12">
           <h1 className="text-4xl font-bold text-white animate-fade-in">
@@ -53,7 +62,20 @@ const Index = () => {
           <div className="text-center text-white">Loading transactions...</div>
         ) : (
           <>
-            {currentKey && <TransactionTracker publicKey={currentKey} />}
+            {currentKey && (
+              <div className="grid gap-8 md:grid-cols-2">
+                <TransactionTracker publicKey={currentKey} />
+                {transactions.length > 0 && (
+                  <div className="p-6 rounded-lg backdrop-blur-lg bg-white/5 border border-purple-500/20">
+                    <h2 className="text-xl font-semibold text-white mb-4">Transaction Stats</h2>
+                    <div className="text-gray-300">
+                      <p>Total Transactions: {transactions.length}</p>
+                      <p>Unique Addresses: {graphData.nodes.length}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
             
             {graphData.nodes.length > 0 && (
               <TransactionGraph

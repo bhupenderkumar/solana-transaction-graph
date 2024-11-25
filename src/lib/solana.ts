@@ -1,6 +1,10 @@
 import { Connection, PublicKey, ParsedInstruction, PartiallyDecodedInstruction } from "@solana/web3.js";
 
-const connection = new Connection("https://api.testnet.solana.com");
+// Using mainnet-beta for more reliable results
+const connection = new Connection("https://api.mainnet-beta.solana.com", {
+  commitment: "confirmed",
+  wsEndpoint: "wss://api.mainnet-beta.solana.com/",
+});
 
 export async function getTransactionHistory(publicKey: string) {
   try {
@@ -55,8 +59,10 @@ export function processTransactionsForGraph(transactions: any[]) {
 
   transactions.forEach((tx) => {
     if (tx.from && tx.to) {
+      // Increment transaction count for each address
       nodes.set(tx.from, (nodes.get(tx.from) || 0) + 1);
       nodes.set(tx.to, (nodes.get(tx.to) || 0) + 1);
+      
       links.push({
         source: tx.from,
         target: tx.to,
@@ -69,7 +75,7 @@ export function processTransactionsForGraph(transactions: any[]) {
     nodes: Array.from(nodes.entries()).map(([id, count]) => ({
       id,
       name: `${id.slice(0, 4)}...${id.slice(-4)} (${count} tx)`,
-      val: 1,
+      val: count, // Node size based on transaction count
     })),
     links,
   };
