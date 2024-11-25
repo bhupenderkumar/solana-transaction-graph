@@ -42,7 +42,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             setNetwork(value as "mainnet" | "testnet");
           }}
         >
-          <SelectTrigger className="w-[180px] bg-white/5 border-none focus:ring-2 focus:ring-solana-purple/50">
+          <SelectTrigger className="w-[180px] bg-background border-border focus:ring-2 focus:ring-solana-purple/50">
             <SelectValue placeholder="Select network" />
           </SelectTrigger>
           <SelectContent>
@@ -55,7 +55,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             placeholder="Enter Solana public key"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="bg-white/5 border-none focus:ring-2 focus:ring-solana-purple/50"
+            className="bg-background border-border focus:ring-2 focus:ring-solana-purple/50"
           />
           <Button 
             onClick={handleSearch}
@@ -66,7 +66,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           </Button>
         </div>
       </div>
-      <div className="text-center text-sm text-gray-400">
+      <div className="text-center text-sm text-muted-foreground">
         Try searching for: Cwg1f6m4m3DGwMEbmsbAfDtUToUf5jRdKrJSGD7GfZCB (Testnet)
       </div>
     </div>

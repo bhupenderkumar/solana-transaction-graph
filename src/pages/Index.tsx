@@ -3,7 +3,7 @@ import { SearchBar } from "@/components/SearchBar";
 import { TransactionGraph } from "@/components/TransactionGraph";
 import { TransactionTable } from "@/components/TransactionTable";
 import { TransactionTracker } from "@/components/TransactionTracker";
-import { AccountMetadata } from "@/components/AccountMetadata"; // Import the new AccountMetadata component
+import { AccountMetadata } from "@/components/AccountMetadata";
 import { getTransactionHistory, processTransactionsForGraph, getAccountInfo } from "@/lib/solana";
 import { toast } from "sonner";
 
@@ -12,14 +12,14 @@ const Index = () => {
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(false);
   const [currentKey, setCurrentKey] = useState<string>("");
-  const [accountInfo, setAccountInfo] = useState<any | null>(null); // State for account info
+  const [accountInfo, setAccountInfo] = useState<any | null>(null);
 
   const fetchTransactions = async (publicKey: string) => {
     try {
       setLoading(true);
       toast.info("Fetching transactions...");
       const txHistory = await getTransactionHistory(publicKey);
-      const info = await getAccountInfo(publicKey); // Fetch account info
+      const info = await getAccountInfo(publicKey);
 
       if (txHistory.length === 0) {
         toast.warning("No transactions found for this address");
@@ -28,7 +28,7 @@ const Index = () => {
 
       setTransactions(txHistory);
       setGraphData(processTransactionsForGraph(txHistory));
-      setAccountInfo(info); // Set account info
+      setAccountInfo(info);
       setCurrentKey(publicKey);
       toast.success(`Found ${txHistory.length} transactions`);
     } catch (error) {
@@ -47,7 +47,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] via-[#2C1A2C] to-[#1A1F2C]">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="container mx-auto py-12 px-4 space-y-8">
         <div className="text-center space-y-8 mb-16">
           <div className="relative">
@@ -56,11 +56,11 @@ const Index = () => {
               Solana Explorer
             </h1>
           </div>
-          <p className="text-xl text-gray-300/90 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-xl text-foreground/90 max-w-2xl mx-auto leading-relaxed">
             Explore and visualize transaction history on the Solana blockchain with real-time updates 
             and detailed analytics
           </p>
-          <div className="flex gap-4 justify-center items-center text-sm text-gray-400">
+          <div className="flex gap-4 justify-center items-center text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-solana-purple animate-pulse"></div>
               Real-time Updates
@@ -101,7 +101,7 @@ const Index = () => {
                         onNodeClick={(nodeId) => fetchTransactions(nodeId)}
                       />
                     ) : (
-                      <div className="flex items-center justify-center h-full text-gray-400">
+                      <div className="flex items-center justify-center h-full text-muted-foreground">
                         No transaction data to visualize
                       </div>
                     )}

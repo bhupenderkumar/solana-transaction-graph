@@ -17,13 +17,13 @@ interface AccountMetadataProps {
 export const AccountMetadata = ({ accountInfo, loading }: AccountMetadataProps) => {
   if (loading) {
     return (
-      <Card className="backdrop-blur-lg bg-white/5 border-purple-500/20">
+      <Card className="backdrop-blur-lg bg-background/5 border-border">
         <CardHeader>
           <CardTitle>Account Metadata</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Skeleton className="h-4 w-full bg-purple-500/20" />
-          <Skeleton className="h-4 w-3/4 bg-purple-500/20" />
+          <Skeleton className="h-4 w-full bg-muted" />
+          <Skeleton className="h-4 w-3/4 bg-muted" />
         </CardContent>
       </Card>
     );
@@ -32,7 +32,7 @@ export const AccountMetadata = ({ accountInfo, loading }: AccountMetadataProps) 
   if (!accountInfo) return null;
 
   return (
-    <Card className="backdrop-blur-lg bg-white/5 border-purple-500/20">
+    <Card className="backdrop-blur-lg bg-background/5 border-border">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           Account Metadata
@@ -56,7 +56,7 @@ export const AccountMetadata = ({ accountInfo, loading }: AccountMetadataProps) 
           
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">Owner</p>
-            <p className="font-mono text-sm bg-white/5 p-2 rounded">{accountInfo.owner}</p>
+            <p className="font-mono text-sm bg-background/5 p-2 rounded">{accountInfo.owner}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -68,7 +68,7 @@ export const AccountMetadata = ({ accountInfo, loading }: AccountMetadataProps) 
               <p className="text-sm text-muted-foreground">Rent Status</p>
               <Badge 
                 variant={accountInfo.isRentExempt ? "default" : "destructive"}
-                className={accountInfo.isRentExempt ? "bg-green-500 text-white" : ""}
+                className={accountInfo.isRentExempt ? "bg-green-500/80 text-white" : ""}
               >
                 {accountInfo.isRentExempt ? "Rent Exempt" : "Not Rent Exempt"}
               </Badge>
