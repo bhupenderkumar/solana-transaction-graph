@@ -1,15 +1,23 @@
 import { Connection, PublicKey, ParsedInstruction, PartiallyDecodedInstruction, AccountInfo } from "@solana/web3.js";
 
-// Using testnet with increased commitment level and longer timeout
-const connection = new Connection("https://api.testnet.solana.com", {
-  commitment: "confirmed",
-  wsEndpoint: "wss://api.testnet.solana.com/",
-  confirmTransactionInitialTimeout: 60000, // Increased timeout
-});
+// Create connections for both networks
+const MAINNET_URL = "https://api.mainnet-beta.solana.com";
+const TESTNET_URL = "https://api.testnet.solana.com";
+
+const createConnection = (network: "mainnet" | "testnet") => {
+  const url = network === "mainnet" ? MAINNET_URL : TESTNET_URL;
+  return new Connection(url, {
+    commitment: "confirmed",
+    wsEndpoint: url.replace("https", "wss"),
+    confirmTransactionInitialTimeout: 60000,
+  });
+};
+
+let connection = createConnection("testnet");
 
 // Rate limiting variables
 let lastCallTime = 0;
-const MIN_CALL_INTERVAL = 2000; // 2 seconds between calls
+const MIN_CALL_INTERVAL = 2000;
 
 const waitForRateLimit = async () => {
   const now = Date.now();
@@ -20,18 +28,25 @@ const waitForRateLimit = async () => {
   lastCallTime = Date.now();
 };
 
+export const setNetwork = (network: "mainnet" | "testnet") => {
+  connection = createConnection(network);
+};
+
 export async function getTransactionHistory(publicKey: string) {
   try {
     await waitForRateLimit();
     const signatures = await connection.getSignaturesForAddress(
       new PublicKey(publicKey),
-      { limit: 10 } // Reduced from 20 to 10 to minimize rate limiting issues
+      { limit: 10 }
     );
 
     const transactions = await Promise.all(
       signatures.map(async (sig) => {
         await waitForRateLimit();
-        const tx = await connection.getParsedTransaction(sig.signature);
+        const tx = await connection.getParsedTransaction(sig.signature, {
+          maxSupportedTransactionVersion: 0,
+        });
+        
         if (!tx?.meta) return null;
 
         const timestamp = sig.blockTime ? sig.blockTime * 1000 : Date.now();
@@ -43,6 +58,7 @@ export async function getTransactionHistory(publicKey: string) {
         let status = tx.meta.err ? "Failed" : "Success";
         let fee = tx.meta.fee / 1e9;
 
+        // Better instruction parsing
         const instruction = tx.transaction.message.instructions[0];
         if ('programId' in instruction) {
           programId = instruction.programId.toString();
@@ -147,7 +163,7 @@ export function processTransactionsForGraph(transactions: any[]) {
       nodes.set(tx.from, {
         id: tx.from,
         name: `${tx.from.slice(0, 4)}...${tx.from.slice(-4)}`,
-        val: 1,
+        val: 3, // Increased node size
         color: "#9945FF"
       });
     } else {
@@ -160,7 +176,7 @@ export function processTransactionsForGraph(transactions: any[]) {
       nodes.set(tx.to, {
         id: tx.to,
         name: `${tx.to.slice(0, 4)}...${tx.to.slice(-4)}`,
-        val: 1,
+        val: 3, // Increased node size
         color: "#14F195"
       });
     } else {
