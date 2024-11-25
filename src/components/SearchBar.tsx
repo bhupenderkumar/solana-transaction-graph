@@ -9,16 +9,17 @@ import { setNetwork } from "@/lib/solana";
 
 interface SearchBarProps {
   onSearch: (publicKey: string) => void;
+  onNetworkChange: (network: string) => void;
 }
 
-export const SearchBar = ({ onSearch }: SearchBarProps) => {
+export const SearchBar = ({ onSearch, onNetworkChange }: SearchBarProps) => {
   const [input, setInput] = useState("");
-  const [network, setNetworkValue] = useState("testnet");
+  const [network, setNetworkValue] = useState("devnet");
 
   const handleSearch = () => {
     try {
       new PublicKey(input);
-      setNetwork(network as "mainnet" | "testnet");
+      setNetwork(network as "mainnet" | "testnet" | "devnet");
       onSearch(input);
       const recentSearches = JSON.parse(localStorage.getItem("recentSearches") || "[]");
       if (!recentSearches.includes(input)) {
@@ -39,7 +40,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           value={network}
           onValueChange={(value) => {
             setNetworkValue(value);
-            setNetwork(value as "mainnet" | "testnet");
+            setNetwork(value as "mainnet" | "testnet" | "devnet");
+            onNetworkChange(value);
           }}
         >
           <SelectTrigger className="w-full sm:w-[180px] bg-background border-border focus:ring-2 focus:ring-solana-purple/50">
@@ -48,6 +50,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           <SelectContent>
             <SelectItem value="mainnet">Mainnet</SelectItem>
             <SelectItem value="testnet">Testnet</SelectItem>
+            <SelectItem value="devnet">Devnet</SelectItem>
           </SelectContent>
         </Select>
         <div className="flex flex-1 gap-2 glass p-3">
@@ -67,7 +70,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
         </div>
       </div>
       <div className="text-center text-sm text-muted-foreground px-4">
-        Try searching for: Cwg1f6m4m3DGwMEbmsbAfDtUToUf5jRdKrJSGD7GfZCB (Testnet)
+        Try searching for: Cwg1f6m4m3DGwMEbmsbAfDtUToUf5jRdKrJSGD7GfZCB (Devnet)
       </div>
     </div>
   );
