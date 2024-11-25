@@ -34,7 +34,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
 
   return (
     <div className="flex flex-col w-full max-w-2xl gap-4">
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <Select
           value={network}
           onValueChange={(value) => {
@@ -42,7 +42,7 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             setNetwork(value as "mainnet" | "testnet");
           }}
         >
-          <SelectTrigger className="w-[180px] bg-background border-border focus:ring-2 focus:ring-solana-purple/50">
+          <SelectTrigger className="w-full sm:w-[180px] bg-background border-border focus:ring-2 focus:ring-solana-purple/50">
             <SelectValue placeholder="Select network" />
           </SelectTrigger>
           <SelectContent>
@@ -59,14 +59,14 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
           />
           <Button 
             onClick={handleSearch}
-            className="bg-gradient-to-r from-solana-purple to-solana-teal hover:opacity-90 transition-all duration-300"
+            className="bg-gradient-to-r from-solana-purple to-solana-teal hover:opacity-90 transition-all duration-300 whitespace-nowrap"
           >
             <Search className="w-4 h-4 mr-2" />
             Search
           </Button>
         </div>
       </div>
-      <div className="text-center text-sm text-muted-foreground">
+      <div className="text-center text-sm text-muted-foreground px-4">
         Try searching for: Cwg1f6m4m3DGwMEbmsbAfDtUToUf5jRdKrJSGD7GfZCB (Testnet)
       </div>
     </div>

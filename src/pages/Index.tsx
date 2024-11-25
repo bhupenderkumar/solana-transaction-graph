@@ -48,19 +48,19 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-300">
-      <div className="container mx-auto py-12 px-4 space-y-8">
-        <div className="text-center space-y-8 mb-16">
+      <div className="container mx-auto py-6 md:py-12 px-4 space-y-6 md:space-y-8">
+        <div className="text-center space-y-4 md:space-y-8 mb-8 md:mb-16">
           <div className="relative">
             <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-solana-purple/30 to-solana-teal/30 -z-10"></div>
-            <h1 className="text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-solana-purple to-solana-teal animate-glow inline-block">
+            <h1 className="text-4xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-solana-purple to-solana-teal animate-glow inline-block">
               Solana Explorer
             </h1>
           </div>
-          <p className="text-xl text-foreground/90 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-foreground/90 max-w-2xl mx-auto leading-relaxed px-4">
             Explore and visualize transaction history on the Solana blockchain with real-time updates 
             and detailed analytics
           </p>
-          <div className="flex gap-4 justify-center items-center text-sm text-muted-foreground">
+          <div className="flex flex-wrap gap-4 justify-center items-center text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-solana-purple animate-pulse"></div>
               Real-time Updates
@@ -72,7 +72,7 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="flex justify-center mb-16">
+        <div className="flex justify-center mb-8 md:mb-16 px-4">
           <SearchBar onSearch={fetchTransactions} />
         </div>
 
@@ -85,33 +85,35 @@ const Index = () => {
         ) : (
           <>
             {currentKey && (
-              <div className="grid gap-8 lg:grid-cols-3">
-                <div className="lg:col-span-1 space-y-8">
-                  <TransactionTracker publicKey={currentKey} />
-                  <AccountMetadata 
-                    accountInfo={accountInfo} 
-                    loading={loading} 
-                  />
-                </div>
-                <div className="lg:col-span-2">
-                  <div className="glass p-6 h-full">
-                    {graphData.nodes.length > 0 ? (
-                      <TransactionGraph
-                        data={graphData}
-                        onNodeClick={(nodeId) => fetchTransactions(nodeId)}
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-muted-foreground">
-                        No transaction data to visualize
-                      </div>
-                    )}
+              <div className="grid gap-6 md:gap-8">
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="md:col-span-1 space-y-6">
+                    <TransactionTracker publicKey={currentKey} />
+                    <AccountMetadata 
+                      accountInfo={accountInfo} 
+                      loading={loading} 
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <div className="glass p-4 md:p-6 h-full">
+                      {graphData.nodes.length > 0 ? (
+                        <TransactionGraph
+                          data={graphData}
+                          onNodeClick={(nodeId) => fetchTransactions(nodeId)}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                          No transaction data to visualize
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
             
             {transactions.length > 0 && (
-              <div className="mt-8">
+              <div className="mt-6 md:mt-8 overflow-x-auto">
                 <TransactionTable transactions={transactions} />
               </div>
             )}

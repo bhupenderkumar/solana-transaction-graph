@@ -30,15 +30,24 @@ export const TransactionGraph = ({ data, onNodeClick }: TransactionGraphProps) =
 
   useEffect(() => {
     if (graphRef.current) {
+      const handleResize = () => {
+        graphRef.current.width(window.innerWidth < 768 ? window.innerWidth - 48 : undefined);
+      };
+      
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      
       // Adjust force parameters for better visualization
       graphRef.current.d3Force("charge").strength(-400);
       graphRef.current.d3Force("link").distance(200);
       graphRef.current.d3Force("center").strength(0.8);
+      
+      return () => window.removeEventListener('resize', handleResize);
     }
   }, []);
 
   return (
-    <div className="w-full h-[600px] rounded-lg overflow-hidden backdrop-blur-lg bg-white/5 border border-solana-purple/20 animate-fade-in">
+    <div className="w-full h-[300px] md:h-[600px] rounded-lg overflow-hidden backdrop-blur-lg bg-white/5 border border-solana-purple/20 animate-fade-in">
       <ForceGraph2D
         ref={graphRef}
         graphData={data}
