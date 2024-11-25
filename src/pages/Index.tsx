@@ -45,13 +45,27 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] via-[#2C1A2C] to-[#1A1F2C]">
       <div className="container mx-auto py-12 px-4 space-y-8">
-        <div className="text-center space-y-6 mb-16 animate-float">
-          <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-solana-purple to-solana-teal animate-glow">
-            Solana Explorer
-          </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Explore and visualize transaction history on the Solana blockchain with real-time updates and detailed analytics
+        <div className="text-center space-y-8 mb-16">
+          <div className="relative">
+            <div className="absolute inset-0 blur-3xl bg-gradient-to-r from-solana-purple/30 to-solana-teal/30 -z-10"></div>
+            <h1 className="text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-solana-purple to-solana-teal animate-glow inline-block">
+              Solana Explorer
+            </h1>
+          </div>
+          <p className="text-xl text-gray-300/90 max-w-2xl mx-auto leading-relaxed">
+            Explore and visualize transaction history on the Solana blockchain with real-time updates 
+            and detailed analytics
           </p>
+          <div className="flex gap-4 justify-center items-center text-sm text-gray-400">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-solana-purple animate-pulse"></div>
+              Real-time Updates
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-solana-teal animate-pulse"></div>
+              Transaction Visualization
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-center mb-16">
