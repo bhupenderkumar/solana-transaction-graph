@@ -14,6 +14,24 @@ const waitForRateLimit = async () => {
   lastCallTime = Date.now();
 };
 
+export const subscribeToTransactions = (publicKey: string, callback: (transaction: any) => void) => {
+  const connection = getCurrentConnection();
+  const subscription = connection.onAccountChange(
+    new PublicKey(publicKey),
+    (accountInfo, context) => {
+      callback({
+        signature: context.slot.toString(),
+        timestamp: Date.now(),
+        type: "Account Update"
+      });
+    }
+  );
+
+  return () => {
+    connection.removeAccountChangeListener(subscription);
+  };
+};
+
 export async function getTransactionHistory(publicKey: string) {
   try {
     await waitForRateLimit();

@@ -5,8 +5,10 @@ const MAINNET_URL = "https://api.mainnet-beta.solana.com";
 const TESTNET_URL = "https://api.testnet.solana.com";
 
 let currentConnection: Connection;
+let currentNetwork: "mainnet" | "testnet" = "testnet";
 
-export const createConnection = (network: "mainnet" | "testnet") => {
+export const setNetwork = (network: "mainnet" | "testnet") => {
+  currentNetwork = network;
   const url = network === "mainnet" ? MAINNET_URL : TESTNET_URL;
   currentConnection = new Connection(url, {
     commitment: "confirmed",
@@ -16,7 +18,12 @@ export const createConnection = (network: "mainnet" | "testnet") => {
   return currentConnection;
 };
 
-export const getCurrentConnection = () => currentConnection;
+export const getCurrentConnection = () => {
+  if (!currentConnection) {
+    return setNetwork(currentNetwork);
+  }
+  return currentConnection;
+};
 
 // Initialize with testnet by default
-createConnection("testnet");
+setNetwork("testnet");
