@@ -1,4 +1,4 @@
-import { ParsedInstruction, PartiallyDecodedInstruction, PublicKey } from "@solana/web3.js";
+import { ParsedInstruction, PublicKey } from "@solana/web3.js";
 import { getCurrentConnection } from "./connection";
 
 // Rate limiting variables
