@@ -43,13 +43,13 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] to-[#6E59A5]">
+    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] via-[#2C1A2C] to-[#1A1F2C]">
       <div className="container mx-auto py-8 px-4 space-y-8">
-        <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl font-bold text-white animate-fade-in">
+        <div className="text-center space-y-4 mb-12 animate-float">
+          <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 animate-glow">
             Solana Transaction Explorer
           </h1>
-          <p className="text-gray-300 animate-fade-in">
+          <p className="text-gray-300 text-lg">
             Visualize transaction history and relationships between Solana addresses
           </p>
         </div>
@@ -67,7 +67,7 @@ const Index = () => {
                 <div className="lg:col-span-1">
                   <TransactionTracker publicKey={currentKey} />
                 </div>
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2 glass p-4">
                   {graphData.nodes.length > 0 && (
                     <TransactionGraph
                       data={graphData}
@@ -79,7 +79,7 @@ const Index = () => {
             )}
             
             {transactions.length > 0 && (
-              <div className="mt-8 animate-fade-in">
+              <div className="mt-8 glass p-4">
                 <TransactionTable transactions={transactions} />
               </div>
             )}

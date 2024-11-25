@@ -13,9 +13,8 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
 
   const handleSearch = () => {
     try {
-      new PublicKey(input); // Validate public key format
+      new PublicKey(input);
       onSearch(input);
-      // Save to local storage
       const recentSearches = JSON.parse(localStorage.getItem("recentSearches") || "[]");
       if (!recentSearches.includes(input)) {
         localStorage.setItem(
@@ -29,16 +28,16 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
   };
 
   return (
-    <div className="flex w-full max-w-2xl gap-2 px-4 animate-fade-in">
+    <div className="flex w-full max-w-2xl gap-2 px-4 glass p-2">
       <Input
         placeholder="Enter Solana public key"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        className="bg-white/5 backdrop-blur-lg border-solana-purple/20"
+        className="bg-white/5 backdrop-blur-lg border-purple-500/20"
       />
       <Button 
         onClick={handleSearch}
-        className="bg-solana-purple hover:bg-solana-purple/90 text-white"
+        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white transition-all duration-300"
       >
         Search
       </Button>
