@@ -3,9 +3,10 @@ import { SearchBar } from "@/components/SearchBar";
 import { TransactionGraph } from "@/components/TransactionGraph";
 import { TransactionTable } from "@/components/TransactionTable";
 import { TransactionTracker } from "@/components/TransactionTracker";
-import { AccountMetadata } from "@/components/AccountMetadata";
-import { getTransactionHistory, processTransactionsForGraph, getAccountInfo } from "@/lib/solana";
+import { getTransactionHistory, processTransactionsForGraph, getAccountInfo, getRecentNetworkTransactions } from "@/lib/solana";
 import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { format } from "date-fns";
 
 const Index = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -13,6 +14,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [currentKey, setCurrentKey] = useState<string>("");
   const [accountInfo, setAccountInfo] = useState<any | null>(null);
+  const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
 
   const fetchTransactions = async (publicKey: string) => {
     try {
@@ -39,11 +41,25 @@ const Index = () => {
     }
   };
 
+  const fetchRecentTransactions = async () => {
+    try {
+      const recent = await getRecentNetworkTransactions(5);
+      setRecentTransactions(recent);
+    } catch (error) {
+      console.error("Error fetching recent transactions:", error);
+    }
+  };
+
   useEffect(() => {
     const recentSearches = JSON.parse(localStorage.getItem("recentSearches") || "[]");
     if (recentSearches.length > 0) {
       fetchTransactions(recentSearches[0]);
     }
+    
+    // Fetch recent transactions initially and every 30 seconds
+    fetchRecentTransactions();
+    const interval = setInterval(fetchRecentTransactions, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -60,16 +76,44 @@ const Index = () => {
             Explore and visualize transaction history on the Solana blockchain with real-time updates 
             and detailed analytics
           </p>
-          <div className="flex flex-wrap gap-4 justify-center items-center text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-solana-purple animate-pulse"></div>
-              Real-time Updates
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-solana-teal animate-pulse"></div>
-              Transaction Visualization
-            </div>
-          </div>
+          
+          {/* Recent Network Transactions */}
+          <Card className="max-w-2xl mx-auto backdrop-blur-lg bg-background/50 border-solana-purple/20">
+            <CardHeader>
+              <CardTitle className="text-lg font-medium text-foreground">Recent Network Transactions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {recentTransactions.map((tx) => (
+                  <div
+                    key={tx.signature}
+                    className="flex justify-between items-center p-2 rounded bg-muted/50 hover:bg-muted transition-colors duration-200"
+                  >
+                    <span className="font-mono text-sm text-muted-foreground">
+                      {tx.signature.slice(0, 8)}...
+                    </span>
+                    <div className="flex items-center gap-4">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        tx.status === "Success" 
+                          ? "bg-green-500/20 text-green-300" 
+                          : "bg-red-500/20 text-red-300"
+                      }`}>
+                        {tx.status}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {format(tx.timestamp, "HH:mm:ss")}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {recentTransactions.length === 0 && (
+                  <div className="text-center text-muted-foreground py-4">
+                    Loading recent transactions...
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="flex justify-center mb-8 md:mb-16 px-4">
@@ -89,10 +133,6 @@ const Index = () => {
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="md:col-span-1 space-y-6">
                     <TransactionTracker publicKey={currentKey} />
-                    <AccountMetadata 
-                      accountInfo={accountInfo} 
-                      loading={loading} 
-                    />
                   </div>
                   <div className="md:col-span-2">
                     <div className="glass p-4 md:p-6 h-full">
