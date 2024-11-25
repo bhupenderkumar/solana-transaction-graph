@@ -66,7 +66,10 @@ export const AccountMetadata = ({ accountInfo, loading }: AccountMetadataProps) 
             </div>
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">Rent Status</p>
-              <Badge variant={accountInfo.isRentExempt ? "success" : "destructive"}>
+              <Badge 
+                variant={accountInfo.isRentExempt ? "default" : "destructive"}
+                className={accountInfo.isRentExempt ? "bg-green-500 text-white" : ""}
+              >
                 {accountInfo.isRentExempt ? "Rent Exempt" : "Not Rent Exempt"}
               </Badge>
             </div>
