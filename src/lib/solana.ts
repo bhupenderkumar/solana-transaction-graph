@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js";
+import { Connection, PublicKey, ParsedInstruction, PartiallyDecodedInstruction } from "@solana/web3.js";
 
 const connection = new Connection("https://api.testnet.solana.com");
 
@@ -16,17 +16,19 @@ export async function getTransactionHistory(publicKey: string) {
 
         const timestamp = sig.blockTime ? sig.blockTime * 1000 : Date.now();
         
-        // Extract from/to addresses and amount
         let from = publicKey;
         let to = "";
         let amount = 0;
 
-        if (tx.transaction.message.instructions[0]?.program === "system") {
-          const instruction = tx.transaction.message.instructions[0];
-          if (instruction.parsed?.type === "transfer") {
-            from = instruction.parsed.info.source;
-            to = instruction.parsed.info.destination;
-            amount = instruction.parsed.info.lamports / 1e9; // Convert lamports to SOL
+        const instruction = tx.transaction.message.instructions[0];
+        if ('programId' in instruction && instruction.programId.toString() === '11111111111111111111111111111111') {
+          if ('parsed' in instruction) {
+            const parsed = (instruction as ParsedInstruction).parsed;
+            if (parsed.type === "transfer") {
+              from = parsed.info.source;
+              to = parsed.info.destination;
+              amount = parsed.info.lamports / 1e9;
+            }
           }
         }
 
@@ -48,13 +50,13 @@ export async function getTransactionHistory(publicKey: string) {
 }
 
 export function processTransactionsForGraph(transactions: any[]) {
-  const nodes = new Set<string>();
+  const nodes = new Map<string, number>();
   const links: Array<{ source: string; target: string; value: number }> = [];
 
   transactions.forEach((tx) => {
     if (tx.from && tx.to) {
-      nodes.add(tx.from);
-      nodes.add(tx.to);
+      nodes.set(tx.from, (nodes.get(tx.from) || 0) + 1);
+      nodes.set(tx.to, (nodes.get(tx.to) || 0) + 1);
       links.push({
         source: tx.from,
         target: tx.to,
@@ -64,11 +66,30 @@ export function processTransactionsForGraph(transactions: any[]) {
   });
 
   return {
-    nodes: Array.from(nodes).map((id) => ({
+    nodes: Array.from(nodes.entries()).map(([id, count]) => ({
       id,
-      name: `${id.slice(0, 4)}...${id.slice(-4)}`,
+      name: `${id.slice(0, 4)}...${id.slice(-4)} (${count} tx)`,
       val: 1,
     })),
     links,
+  };
+}
+
+export function subscribeToTransactions(publicKey: string, callback: (transaction: any) => void) {
+  const subscriptionId = connection.onLogs(
+    new PublicKey(publicKey),
+    (logs) => {
+      if (logs.err) return;
+      callback({
+        signature: logs.signature,
+        timestamp: Date.now(),
+        type: 'new-transaction'
+      });
+    },
+    'confirmed'
+  );
+
+  return () => {
+    connection.removeOnLogsListener(subscriptionId);
   };
 }

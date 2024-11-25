@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { TransactionGraph } from "@/components/TransactionGraph";
 import { TransactionTable } from "@/components/TransactionTable";
+import { TransactionTracker } from "@/components/TransactionTracker";
 import { getTransactionHistory, processTransactionsForGraph } from "@/lib/solana";
 import { toast } from "sonner";
 
@@ -9,6 +10,7 @@ const Index = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
   const [loading, setLoading] = useState(false);
+  const [currentKey, setCurrentKey] = useState<string>("");
 
   const fetchTransactions = async (publicKey: string) => {
     try {
@@ -16,6 +18,7 @@ const Index = () => {
       const txHistory = await getTransactionHistory(publicKey);
       setTransactions(txHistory);
       setGraphData(processTransactionsForGraph(txHistory));
+      setCurrentKey(publicKey);
     } catch (error) {
       toast.error("Failed to fetch transactions");
     } finally {
@@ -24,7 +27,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    // Load last searched key from localStorage
     const recentSearches = JSON.parse(localStorage.getItem("recentSearches") || "[]");
     if (recentSearches.length > 0) {
       fetchTransactions(recentSearches[0]);
@@ -51,6 +53,8 @@ const Index = () => {
           <div className="text-center text-white">Loading transactions...</div>
         ) : (
           <>
+            {currentKey && <TransactionTracker publicKey={currentKey} />}
+            
             {graphData.nodes.length > 0 && (
               <TransactionGraph
                 data={graphData}
